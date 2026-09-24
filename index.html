@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Conectando ao Atendimento...</title>
+  <title>Liberando Catálogo...</title>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -58,9 +58,9 @@
 <body>
 
   <div class="loader"></div>
-  <h2>Conectando com nossa consultora...</h2>
-  <p>Você será redirecionado para o WhatsApp em instantes.</p>
-  <a id="btnManual" class="btn-manual" href="#">Clique aqui para abrir o WhatsApp</a>
+  <h2>Liberando o catálogo no WhatsApp...</h2>
+  <p>Você será redirecionado para receber o material em PDF.</p>
+  <a id="btnManual" class="btn-manual" href="#">Receber Catálogo em PDF</a>
 
   <script>
     (function() {
@@ -71,8 +71,8 @@
       // 2. URL DO WEBHOOK DO GOOGLE APPS SCRIPT
       var urlAppsScript = "https://script.google.com/macros/s/AKfycbyzON6m8odwUU947Mx1gUyiyaenLMmr_BwCz7M3uyWpNsBxECZepOIab07W24bWhDEj1g/exec";
 
-      // 3. MENSAGEM PADRONIZADA (Código M-26 identifica origem Meta Ads de forma discreta)
-      var textoMensagem = "Olá! Acabei de solicitar o Catálogo Digital (Ref: M-26) pelo anúncio e gostaria de tirar dúvidas sobre o projeto.";
+      // 3. MENSAGEM PERSUASIVA E SEM PRESSÃO DE VENDAS
+      var textoMensagem = "Olá! Gostaria de receber o PDF do Catálogo Digital [Ref: M-26], por favor.";
       var linkWhatsApp = "https://api.whatsapp.com/send?phone=" + vendedoraFone + "&text=" + encodeURIComponent(textoMensagem);
 
       // 4. ATRIBUIÇÃO AO BOTÃO MANUAL
