@@ -63,36 +63,41 @@
   <a id="btnManual" class="btn-manual" href="#">Clique aqui para abrir o WhatsApp</a>
 
   <script>
-    // 1. DADOS DA CONSULTORA
-    const vendedoraNome = "Valéria";
-    const vendedoraFone = "5511971483931";
+    (function() {
+      // 1. DADOS DA CONSULTORA
+      var vendedoraNome = "Valeria";
+      var vendedoraFone = "5511971483931";
 
-    // 2. URL DO WEBHOOK DO GOOGLE APPS SCRIPT
-    // Cole aqui a URL gerada no Apps Script da sua planilha
-    const urlAppsScript = "https://script.google.com/macros/s/AKfycbyzON6m8odwUU947Mx1gUyiyaenLMmr_BwCz7M3uyWpNsBxECZepOIab07W24bWhDEj1g/exec
-";
+      // 2. URL DO WEBHOOK DO GOOGLE APPS SCRIPT (Sem quebras de linha)
+      var urlAppsScript = "https://script.google.com/macros/s/AKfycbyzON6m8odwUU947Mx1gUyiyaenLMmr_BwCz7M3uyWpNsBxECZepOIab07W24bWhDEj1g/exec";
 
-    // 3. MENSAGEM DO WHATSAPP
-    const mensagem = encodeURIComponent("Olá, Valéria! Acabei de solicitar o Catálogo pelo anúncio e gostaria de mais informações.");
-    const linkWhatsApp = "https://wa.me/" + vendedoraFone + "?text=" + mensagem;
+      // 3. LINK DO WHATSAPP
+      var mensagem = encodeURIComponent("Olá, Valéria! Acabei de solicitar o Catálogo pelo anúncio e gostaria de mais informações.");
+      var linkWhatsApp = "https://api.whatsapp.com/send?phone=" + vendedoraFone + "&text=" + mensagem;
 
-    // 4. ATUALIZA BOTÃO MANUAL DE CONTINGÊNCIA
-    document.getElementById("btnManual").href = linkWhatsApp;
-
-    // 5. REGISTRO DO CLIQUE NA PLANILHA
-    if (urlAppsScript && !urlAppsScript.includes("SUA_URL_DO_APPS_SCRIPT_AQUI")) {
-      const pingUrl = urlAppsScript + "?vendedora=" + encodeURIComponent(vendedoraNome);
-      if (navigator.sendBeacon) {
-        navigator.sendBeacon(pingUrl);
-      } else {
-        fetch(pingUrl, { mode: 'no-cors' }).catch(function(){});
+      // 4. ATRIBUIÇÃO IMEDIATA AO BOTÃO MANUAL
+      var btn = document.getElementById("btnManual");
+      if (btn) {
+        btn.href = linkWhatsApp;
       }
-    }
 
-    // 6. REDIRECIONAMENTO AUTOMÁTICO
-    setTimeout(function() {
-      window.location.href = linkWhatsApp;
-    }, 400);
+      // 5. REGISTRO NA PLANILHA (Blindado contra falha de conexão)
+      try {
+        if (urlAppsScript) {
+          var pingUrl = urlAppsScript + "?vendedora=" + encodeURIComponent(vendedoraNome);
+          if (navigator.sendBeacon) {
+            navigator.sendBeacon(pingUrl);
+          } else {
+            new Image().src = pingUrl;
+          }
+        }
+      } catch (e) {}
+
+      // 6. REDIRECIONAMENTO AUTOMÁTICO
+      setTimeout(function() {
+        window.location.href = linkWhatsApp;
+      }, 500);
+    })();
   </script>
 
 </body>
