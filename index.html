@@ -71,20 +71,30 @@
       // 2. URL DO WEBHOOK DO GOOGLE APPS SCRIPT
       var urlAppsScript = "https://script.google.com/macros/s/AKfycbyzON6m8odwUU947Mx1gUyiyaenLMmr_BwCz7M3uyWpNsBxECZepOIab07W24bWhDEj1g/exec";
 
-      // 3. MENSAGEM LIMPA E SEM CÓDIGOS VISÍVEIS
+      // 3. CAPTURA TELEFONE E EMAIL ENVIADOS PELO ANÚNCIO
+      var urlParams = new URLSearchParams(window.location.search);
+      var clienteTelefone = urlParams.get('telefone') || urlParams.get('phone') || "";
+      var clienteEmail = urlParams.get('email') || "";
+
+      // 4. MENSAGEM DO WHATSAPP
       var textoMensagem = "Olá! Gostaria de receber o PDF do Catálogo Digital, por favor.";
       var linkWhatsApp = "https://api.whatsapp.com/send?phone=" + vendedoraFone + "&text=" + encodeURIComponent(textoMensagem);
 
-      // 4. ATRIBUIÇÃO AO BOTÃO MANUAL
+      // 5. ATRIBUIÇÃO AO BOTÃO MANUAL CASO O REDIRECIONAMENTO DEMORE
       var btn = document.getElementById("btnManual");
       if (btn) {
         btn.href = linkWhatsApp;
       }
 
-      // 5. REGISTRO NA PLANILHA COM A ORIGEM
+      // 6. AVISA A PLANILHA (TELEMETRIA ATIVA)
       try {
         if (urlAppsScript) {
-          var pingUrl = urlAppsScript + "?vendedora=" + encodeURIComponent(vendedoraNome) + "&origem=MetaAds";
+          var pingUrl = urlAppsScript + 
+            "?telefone=" + encodeURIComponent(clienteTelefone) + 
+            "&email=" + encodeURIComponent(clienteEmail) + 
+            "&vendedora=" + encodeURIComponent(vendedoraNome) + 
+            "&origem=MetaAds";
+
           if (navigator.sendBeacon) {
             navigator.sendBeacon(pingUrl);
           } else {
@@ -93,10 +103,10 @@
         }
       } catch (e) {}
 
-      // 6. REDIRECIONAMENTO AUTOMÁTICO
+      // 7. REDIRECIONA PARA O WHATSAPP DA VALÉRIA
       setTimeout(function() {
         window.location.href = linkWhatsApp;
-      }, 500);
+      }, 600);
     })();
   </script>
 
