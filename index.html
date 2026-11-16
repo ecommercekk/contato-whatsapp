@@ -64,49 +64,62 @@
 
   <script>
     (function() {
-      // 1. DADOS DE ATENDIMENTO
       var vendedoraNome = "Valeria";
       var vendedoraFone = "5511971483931";
-
-      // 2. URL DO WEBHOOK DO GOOGLE APPS SCRIPT
       var urlAppsScript = "https://script.google.com/macros/s/AKfycbyzON6m8odwUU947Mx1gUyiyaenLMmr_BwCz7M3uyWpNsBxECZepOIab07W24bWhDEj1g/exec";
 
-      // 3. CAPTURA TELEFONE E EMAIL ENVIADOS PELO ANÚNCIO
       var urlParams = new URLSearchParams(window.location.search);
-      var clienteTelefone = urlParams.get('telefone') || urlParams.get('phone') || "";
-      var clienteEmail = urlParams.get('email') || "";
+      var clienteTelefone = (
+        urlParams.get('telefone') ||
+        urlParams.get('phone') ||
+        urlParams.get('phone_number') ||
+        urlParams.get('whatsapp') ||
+        ""
+      ).replace(/\D/g, "");
 
-      // 4. MENSAGEM DO WHATSAPP
+      var clienteEmail = (
+        urlParams.get('email') ||
+        urlParams.get('e-mail') ||
+        ""
+      ).trim().toLowerCase();
+
       var textoMensagem = "Olá! Gostaria de receber o PDF do Catálogo Digital, por favor.";
       var linkWhatsApp = "https://api.whatsapp.com/send?phone=" + vendedoraFone + "&text=" + encodeURIComponent(textoMensagem);
 
-      // 5. ATRIBUIÇÃO AO BOTÃO MANUAL CASO O REDIRECIONAMENTO DEMORE
       var btn = document.getElementById("btnManual");
-      if (btn) {
-        btn.href = linkWhatsApp;
-      }
+      if (btn) btn.href = linkWhatsApp;
 
-      // 6. AVISA A PLANILHA (TELEMETRIA ATIVA)
-      try {
-        if (urlAppsScript) {
-          var pingUrl = urlAppsScript + 
-            "?telefone=" + encodeURIComponent(clienteTelefone) + 
-            "&email=" + encodeURIComponent(clienteEmail) + 
-            "&vendedora=" + encodeURIComponent(vendedoraNome) + 
-            "&origem=MetaAds";
+      function registrarTelemetria() {
+        if (!urlAppsScript || (!clienteTelefone && !clienteEmail)) return;
 
+        var pingUrl = urlAppsScript +
+          "?telefone=" + encodeURIComponent(clienteTelefone) +
+          "&email=" + encodeURIComponent(clienteEmail) +
+          "&vendedora=" + encodeURIComponent(vendedoraNome) +
+          "&origem=MetaAds" +
+          "&t=" + Date.now();
+
+        try {
           if (navigator.sendBeacon) {
             navigator.sendBeacon(pingUrl);
-          } else {
-            new Image().src = pingUrl;
           }
+          fetch(pingUrl, { method: "GET", mode: "no-cors", keepalive: true }).catch(function() {});
+        } catch (e) {
+          new Image().src = pingUrl;
         }
-      } catch (e) {}
+      }
 
-      // 7. REDIRECIONA PARA O WHATSAPP DA VALÉRIA
+      registrarTelemetria();
+
+      if (btn) {
+        btn.addEventListener("click", function() {
+          registrarTelemetria();
+        });
+      }
+
       setTimeout(function() {
-        window.location.href = linkWhatsApp;
-      }, 600);
+        window.location.replace(linkWhatsApp);
+      }, 800);
     })();
   </script>
 
